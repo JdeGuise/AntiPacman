@@ -6,13 +6,11 @@
 
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -20,14 +18,13 @@ import java.util.Queue;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 /* Game logic */
 
+@SuppressWarnings("serial")
 public class AntiPacman extends JPanel {
 
   private final byte board[][] = getBoard();
@@ -39,7 +36,7 @@ public class AntiPacman extends JPanel {
   private long modeStart;
   
   private Image ghostImg;
-  private Image pacmenImg;
+  private Image[] pacmenImg = new Image[4];
   
   static JFrame theFrame = new IntroScreen();
   private JLabel antiPacmanScoreLabel;
@@ -66,12 +63,10 @@ public class AntiPacman extends JPanel {
   boolean controlTouch;
   private boolean isChaseMode;
   
-  
   private static final int TIME_CHASE = 5; 
   private static final int TIME_SCATTER = 7;
   private static final int TIME_FRIGHTENED = 10; 
   private static final int PACMEN_SIZE = 15;
-  private static final int GHOST_SIZE = 20;
   private static final int DOT_SIZE = 5;
   private static final int ENERGIZER_SIZE = DOT_SIZE * 2;
   private static final int PAC_RELEASE = 5;
@@ -79,23 +74,13 @@ public class AntiPacman extends JPanel {
   private int pacmanLives = 12;
   private static final int SCALE = 20;
   
-  //menu stuff
-  private enum STATE {
-	  MENU,
-	  GAME
-  };
-  
-  private STATE State = STATE.MENU;
-  
   // Constructor, initializes JPanels and board 
   public AntiPacman() {
-    super();
-
     
-
+	super();
     
+    //load assets, initialize game vars, load the board labels and the controls listener, start game thread
     loadImages();
-    //call initVars method, add a keylistener for our player controls, call start() method
     initializeVariables();
     loadBoard();
     start();
@@ -127,10 +112,31 @@ public class AntiPacman extends JPanel {
 	  setDoubleBuffered(true);
   }
   
-  private void loadImages(){
+  public void loadImages(){
 	  
-	  ghostImg = new ImageIcon("resources/Clydeghost.png").getImage();
-	  pacmenImg = new ImageIcon("resources/pacmen-blue.png").getImage();
+	  ghostImg = new ImageIcon("resources/Inky.png").getImage();
+	  pacmenImg[0] = new ImageIcon("resources/pacmen-blue.png").getImage();
+	  pacmenImg[1] = new ImageIcon("resources/pacmen-red.png").getImage();
+	  pacmenImg[2] = new ImageIcon("resources/pacmen-pink.png").getImage();
+	  pacmenImg[3] = new ImageIcon("resources/pacmen-yellow.png").getImage();
+  }
+  
+  private Image loadImage(String obj){
+
+	  switch(obj){
+		  case "p1":
+			  return pacmenImg[0];
+		  case "p2":
+			  return pacmenImg[1];
+		  case "p3":
+			  return pacmenImg[2];
+		  case "p4":
+			  return pacmenImg[3];
+		  case "ghost":
+			  return ghostImg;
+	  }
+	  
+	return null;
   }
   
   //start other threads
@@ -141,82 +147,65 @@ public class AntiPacman extends JPanel {
   
   //initialize pacmen and ghost locations
   public void initializeVariables() {
+	  
     LocationPoint pacmenStart = null;
     
     for (int i = 0; i < board.length; i++) {
       for (int y = 0; y < board[i].length; y++) {
-    	  // PlayerGhost starting location
+    	  
+    	  // create starting location based on bits of board defined as "PLAYERGHOST"
         if (board[i][y] == PLAYERGHOST) {
-        	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        	InputStream inputImage = classLoader.getResourceAsStream("Clydeghost.png");
-        	Image ghostImage;
-			try {
-				ghostImage = ImageIO.read(inputImage);
-				ghost = new GhostPlayer(y, i, ghostImage);                    				
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			ghost = new GhostPlayer(y, i, loadImage("ghost"));                    				
         }
         
-        // Pacmen starting location
+        // create starting locations based on bits of board defined as 'PACMEN'
         else if (board[i][y] == PACMEN) {
           pacmenStart = new LocationPoint(y, i);
         }
       }
     }
     
+    // points of reference for pacmen start
     final int x = (int) pacmenStart.getX();
     final int y = (int) pacmenStart.getY();
+        
+    // initialize pacmen objects
+    pacOne = new ThePacmen(pacmenImg[0], x - 2, y, board, gameMode);
+    pacTwo = new ThePacmen(pacmenImg[1], x, y, board, gameMode);
+    pacThree = new ThePacmen(pacmenImg[2], x + 2, y, board, gameMode);
+    pacFour = new ThePacmen(pacmenImg[3], x, y - 2, board, gameMode);    
     
-    // First pacman
-    InputStream pacOneStream = ClassLoader.getSystemResourceAsStream("pacmen-red.png");
-    InputStream pacTwoStream = ClassLoader.getSystemResourceAsStream("pacmen-blue.png");
-    InputStream pacThreeStream = ClassLoader.getSystemResourceAsStream("pacmen-yellow.png");
-    InputStream pacFourStream = ClassLoader.getSystemResourceAsStream("pacmen-pink.png");
     
-    
-    try {
-		Image pacOneImg = ImageIO.read(pacOneStream);
-		Image pacTwoImg = ImageIO.read(pacTwoStream);
-		Image pacThreeImg = ImageIO.read(pacThreeStream);
-		Image pacFourImg = ImageIO.read(pacFourStream);
-		
-	    pacOne = new ThePacmen(pacOneImg, x - 2, y, board, gameMode);
-	    pacTwo = new ThePacmen(pacTwoImg, x, y, board, gameMode);
-	    pacThree = new ThePacmen(pacThreeImg, x + 2, y, board, gameMode);
-	    pacFour = new ThePacmen(pacFourImg, x, y - 2, board, gameMode);
-
-    } catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-
+    // initialize conditions around objects (set into the pen)
     board[pacOne.getY()][pacOne.getX()] = PACMEN;
     thePacmen[0] = pacOne;
     pacPenQ.add(pacOne);
     
-    // Second pacman
+    // 2
     board[pacTwo.getY()][pacTwo.getX()] = PACMEN;
     thePacmen[1] = pacTwo;
     pacPenQ.add(pacTwo);
+    
+    //pac respawn point in pen
     pacSpawnPoint = new LocationPoint(pacTwo.getX(), pacTwo.getY());
     
-    // Third pacman
+    // 3
     board[pacThree.getY()][pacThree.getX()] = PACMEN;
     thePacmen[2] = pacThree;
     pacPenQ.add(pacThree);
     
-    // Fourth pacman
+    // 4
     board[pacFour.getY()][pacFour.getX()] = PACMEN;
     thePacmen[3] = pacFour;
     pacPenQ.add(pacFour);
     
+    
+    // release one of the four immediately
     pacReleasePoint = new LocationPoint(pacFour.getX(), pacFour.getY());
     pacReleasedAt = System.currentTimeMillis();
     pacFour.release();
     
+    //initialize into chase mode
     isChaseMode = true;
     ghostModeStart = System.currentTimeMillis();
   }
@@ -560,7 +549,7 @@ public class AntiPacman extends JPanel {
             break;
             
           case PLAYERGHOST:
-        	drawGhost(ghost);
+        	drawGhost(ghost, ghostImg);
             break;
             
           case PACMEN:
@@ -671,6 +660,7 @@ public class AntiPacman extends JPanel {
   
   //Removes ghost from its position on the board, updates ghosts coordinates to that of initial point, updates board to that value
   private void pacsLeavePen(final ThePacmen thePacmen) {
+	  
     board[thePacmen.getY()][thePacmen.getX()] = FREE;
     thePacmen.setX((int) pacReleasePoint.getX());
     thePacmen.setY((int) pacReleasePoint.getY());
@@ -716,20 +706,14 @@ public class AntiPacman extends JPanel {
   // draws pacmen AI within parameter
   // morphing this from fill methods to drawing images
   private void drawPacmen(ThePacmen thePacmen, Image thePacmenImg) {
-//		Twodg.setColor(theColor);	  	
-//        Twodg.fillOval(thePacmen.getX() * SCALE, thePacmen.getY() * SCALE, PACMEN_SIZE, PACMEN_SIZE);
-  
 	  Twodg.drawImage(thePacmenImg, thePacmen.getX() * SCALE, thePacmen.getY() * SCALE, null);
   }
   
   
   
   // draw Ghost char within parameter
-  private void drawGhost(GhostPlayer ghost) {
-
-	  Twodg.setColor(Color.WHITE);
-	  Twodg.fillRect(ghost.getX() * SCALE, ghost.getY() * SCALE, GHOST_SIZE, GHOST_SIZE);
-    
+  private void drawGhost(GhostPlayer ghost, Image theGhostImg) {
+	  Twodg.drawImage(theGhostImg, ghost.getX() * SCALE, ghost.getY() * SCALE, null);    
   }
   
   
@@ -750,11 +734,12 @@ public class AntiPacman extends JPanel {
       for(int y = 0; y < theMap[i].length; y++) { 
     	  
     	
-        theMapb[(int)i][(int)y] = (byte) (1 << theMap[i][y]);
+        theMapb[i][y] = (byte) (1 << theMap[i][y]);
         
         
       }
     }
+    
     return theMapb;
   }
   
