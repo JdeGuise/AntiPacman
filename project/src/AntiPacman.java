@@ -38,11 +38,14 @@ public class AntiPacman extends JPanel {
   private Mode gameMode;
   private long modeStart;
   
-  static JFrame theFrame = new JFrame("Anti-Pacman");
-  private final JLabel antiPacmanScoreLabel;
-  private final JLabel pacmanLivesLabel;
-  private final JLabel ghostModeLabel;
-  private final JLabel nextReleaseLabel;
+  private Image ghostImg;
+  private Image pacmenImg;
+  
+  static JFrame theFrame = new IntroScreen();
+  private JLabel antiPacmanScoreLabel;
+  private JLabel pacmanLivesLabel;
+  private JLabel ghostModeLabel;
+  private JLabel nextReleaseLabel;
   
   public static final byte WALL = 1 << 0;
   public static final byte FREE = 1 << 1;
@@ -75,40 +78,59 @@ public class AntiPacman extends JPanel {
   private static final String SPACE = "     ";
   private int pacmanLives = 12;
   private static final int SCALE = 20;
-
-
+  
+  //menu stuff
+  private enum STATE {
+	  MENU,
+	  GAME
+  };
+  
+  private STATE State = STATE.MENU;
   
   // Constructor, initializes JPanels and board 
   public AntiPacman() {
     super();
-    setSize(new Dimension(400, 400));
-    setMinimumSize(new Dimension(400, 400));
-    setFocusable(true);
-    requestFocusInWindow();
+
     
-    antiPacmanScoreLabel = new JLabel("Score: " + antiPacmanScore, JLabel.RIGHT);
-    antiPacmanScoreLabel.setForeground(Color.white);
-    add(antiPacmanScoreLabel);
+
     
-    pacmanLivesLabel = new JLabel(SPACE + "Lives: " + pacmanLives, JLabel.LEFT);
-    pacmanLivesLabel.setForeground(Color.WHITE);
-    add(pacmanLivesLabel);
-    
-    ghostModeLabel = new JLabel(SPACE + "Normal", JLabel.LEFT);
-    ghostModeLabel.setForeground(Color.WHITE);
-    add(ghostModeLabel);
-    
-    nextReleaseLabel = new JLabel(SPACE + "Pacmen Release", JLabel.LEFT);
-    nextReleaseLabel.setForeground(Color.WHITE);
-    add(nextReleaseLabel);
-    
-    gameMode = Mode.CHASE;
-    modeStart = System.currentTimeMillis();
-    
+    loadImages();
     //call initVars method, add a keylistener for our player controls, call start() method
     initializeVariables();
-    addKeyListener(new ControlListener());
+    loadBoard();
     start();
+  }
+  
+  private void loadBoard(){
+	    antiPacmanScoreLabel = new JLabel("Score: " + antiPacmanScore, JLabel.RIGHT);
+	    antiPacmanScoreLabel.setForeground(Color.white);
+	    add(antiPacmanScoreLabel);
+	    
+	    pacmanLivesLabel = new JLabel(SPACE + "Lives: " + pacmanLives, JLabel.LEFT);
+	    pacmanLivesLabel.setForeground(Color.WHITE);
+	    add(pacmanLivesLabel);
+	    
+	    ghostModeLabel = new JLabel(SPACE + "Normal", JLabel.LEFT);
+	    ghostModeLabel.setForeground(Color.WHITE);
+	    add(ghostModeLabel);
+	    
+	    nextReleaseLabel = new JLabel(SPACE + "Pacmen Release", JLabel.LEFT);
+	    nextReleaseLabel.setForeground(Color.WHITE);
+	    add(nextReleaseLabel);
+	    
+	    gameMode = Mode.CHASE;
+	    modeStart = System.currentTimeMillis();	  
+	  
+	  addKeyListener(new ControlListener());
+	  setFocusable(true);
+	  setBackground(Color.black);
+	  setDoubleBuffered(true);
+  }
+  
+  private void loadImages(){
+	  
+	  ghostImg = new ImageIcon("resources/Clydeghost.png").getImage();
+	  pacmenImg = new ImageIcon("resources/pacmen-blue.png").getImage();
   }
   
   //start other threads
@@ -123,8 +145,6 @@ public class AntiPacman extends JPanel {
     
     for (int i = 0; i < board.length; i++) {
       for (int y = 0; y < board[i].length; y++) {
-        
-    	  
     	  // PlayerGhost starting location
         if (board[i][y] == PLAYERGHOST) {
         	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -205,11 +225,8 @@ public class AntiPacman extends JPanel {
   //main creates frame and adds game
   public static void main(String[] args) {
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    theFrame.setSize(500, 500);
-    
-    theFrame.add(new AntiPacman());
 
-    theFrame.setVisible(true);
+    theFrame = new IntroScreen();
   }
   
   //Returns a int representing the item that the parameter's item will hit based on the parameter item's direction

@@ -1,0 +1,50 @@
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.PopupMenu;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class IntroScreen extends Component {
+
+	private final JLabel titleLabel;
+	private long antiPacmanScore = 500;
+	private final JFrame introScreen = new JFrame("Anti-Pacman");
+	private JPanel pnlButton = new JPanel();
+	
+	private JButton startButton = new JButton("Start Game");
+	
+	public IntroScreen(){
+	    super();
+	    setSize(new Dimension(400, 400));
+	    setMinimumSize(new Dimension(400, 400));
+	    setFocusable(true);
+	    requestFocusInWindow();
+	    
+	    startButton.setBounds(60, 400, 220, 30);
+	    
+	    titleLabel = new JLabel("Score: " + antiPacmanScore, JLabel.RIGHT);
+	    titleLabel.setForeground(Color.white);
+	    introScreen.add(titleLabel);
+	    start();
+	}
+	
+	public void start(){
+		new Thread(new TitleLogic()).start();
+	}
+	
+	public class TitleLogic implements Runnable{
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			while(true){
+				
+			}
+		}
+		
+	}
+}

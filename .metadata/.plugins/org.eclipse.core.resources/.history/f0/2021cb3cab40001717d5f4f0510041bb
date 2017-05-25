@@ -1,0 +1,41 @@
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+
+import javax.swing.JLabel;
+
+import AntiPacman.ControlListener;
+
+public class IntroScreen extends Component {
+	public IntroScreen(){
+	    super();
+	    setSize(new Dimension(400, 400));
+	    setMinimumSize(new Dimension(400, 400));
+	    setFocusable(true);
+	    requestFocusInWindow();
+	
+	    antiPacmanScoreLabel = new JLabel("Score: " + antiPacmanScore, JLabel.RIGHT);
+	    antiPacmanScoreLabel.setForeground(Color.white);
+	    add(antiPacmanScoreLabel);
+	    
+	    pacmanLivesLabel = new JLabel(SPACE + "Lives: " + pacmanLives, JLabel.LEFT);
+	    pacmanLivesLabel.setForeground(Color.WHITE);
+	    add(pacmanLivesLabel);
+	    
+	    ghostModeLabel = new JLabel(SPACE + "Normal", JLabel.LEFT);
+	    ghostModeLabel.setForeground(Color.WHITE);
+	    add(ghostModeLabel);
+	    
+	    nextReleaseLabel = new JLabel(SPACE + "Pacmen Release", JLabel.LEFT);
+	    nextReleaseLabel.setForeground(Color.WHITE);
+	    add(nextReleaseLabel);
+	    
+	    gameMode = Mode.CHASE;
+	    modeStart = System.currentTimeMillis();
+	    
+	    //call initVars method, add a keylistener for our player controls, call start() method
+	    initializeVariables();
+	    addKeyListener(new ControlListener());	
+	
+	}
+}

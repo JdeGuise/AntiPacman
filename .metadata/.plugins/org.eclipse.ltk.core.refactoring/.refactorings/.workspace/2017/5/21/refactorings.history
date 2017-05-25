@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete 17 resources" deleteContents="false" description="Delete 17 resources" element1="/CPS 180 AliceLetterCounter" element10="/CPS 240 Homework 4" element11="/CPS 240 Homework 5" element12="/CPS 240 Homework 6" element13="/CPS 240 Homework 7" element14="/CPS 240 Homework 8" element15="/CPS 240 Homework 9" element16="/CPS 240 Lab 3" element17="/HW6Recursion" element2="/CPS 180 AliceTextCombiner" element3="/CPS 181 Banking Project" element4="/CPS 181 BSTree" element5="/CPS 181 CMUEventSorter" element6="/CPS 181 TicTacToe" element7="/CPS 240 Homework 1" element8="/CPS 240 Homework 2" element9="/CPS 240 Homework 3" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="17" stamp="1495647584887"/>
+</session>
