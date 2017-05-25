@@ -1,12 +1,8 @@
-import java.awt.Color;
 import java.awt.Image;
-import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.imageio.ImageIO;
 
 // code for defining our Pacmen AI
 
@@ -26,7 +22,6 @@ public class ThePacmen extends CharacterObject {
   private final LocationPoint aPoint = new LocationPoint();
   private final Queue<LocationPoint> prospectivePoints = new LinkedList<LocationPoint>();
   
-  private final Image startPacmenImage;
   private Mode gameMode;
   private Direction randomDirection;
   
@@ -44,7 +39,6 @@ public class ThePacmen extends CharacterObject {
   // Constructor
   public ThePacmen(Image thePacmenImage, int x, int y, final byte[][] board, final Mode gameMode) {
     super((int)x, (int)y, thePacmenImage);
-    this.startPacmenImage = thePacmenImage;
     randomDistFromPacman = 0; //(int) theGenerator.nextInt(4);
     cornerPoint = getCorner(new LocationPoint(x, y));
     cornerLoc = cornerPoint;
@@ -60,15 +54,15 @@ public class ThePacmen extends CharacterObject {
     for (int i = 0; i < board.length; i++) {
       for (int y = 0; y < board[i].length; y++) {
         if (board[i][y] == AntiPacman.WALL) {
-          this.theBoard[i][y] = this.WALL;
+          this.theBoard[i][y] = ThePacmen.WALL;
         }
         else if(board[i][y] == AntiPacman.PLAYERGHOST) { 
-          this.theBoard[i][y] = this.PACMEN;
+          this.theBoard[i][y] = ThePacmen.PACMEN;
           pacmanP.setX(i);
           pacmanP.setY(y);
         }
         else {
-          this.theBoard[i][y] = this.UNEXPLORED;
+          this.theBoard[i][y] = ThePacmen.UNEXPLORED;
         }
       }
     }
@@ -217,7 +211,7 @@ public class ThePacmen extends CharacterObject {
       for(Direction theDirection : theDirections) { 
         final LocationPoint newPoint = getNewPoint(workBackwards, theDirection);
         final int itemAtNewPoint = itemAtPoint(newPoint);
-        if(itemAtNewPoint == (itemAtNow - 1) && itemAtNewPoint != this.WALL) {
+        if(itemAtNewPoint == (itemAtNow - 1) && itemAtNewPoint != ThePacmen.WALL) {
           moveDirection = theDirection; 
           workBackwards = newPoint;
           itemAtNow = itemAtPoint(workBackwards);
@@ -225,11 +219,6 @@ public class ThePacmen extends CharacterObject {
       }
     }
     return getOppositeDirection(moveDirection);
-  }
-  
-  // Updates the board at the given Point with the given number
-  private void updateBoard(final LocationPoint thePoint, final int num) {
-    theBoard[thePoint.getY()][thePoint.getX()] = num;
   }
   
   // Returns the item at a LocationPoint given the LocationPoint and its Direction
