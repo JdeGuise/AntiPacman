@@ -1,5 +1,7 @@
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,7 +12,11 @@ public class IntroScreen extends JFrame {
 	public IntroScreen(){
 		
 	    setTitle("Anti-Pacman");
-	    setSize(500,500);
+	    
+	    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	    double width = screenSize.getWidth();
+	    double height = screenSize.getHeight();
+	    setSize((int) width, (int) height);
     	
     	//Create and set up the window.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -26,7 +32,7 @@ public class IntroScreen extends JFrame {
         pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
  
         addALabel("ANTI-PACMAN", pane);
-        addWarningMessage("THE FOLLOWING GAME WAS CREATED FOR EXPERIMENTAL PROGRAMMING PURPOSES ONLY.  THE PROJECT IS NOT MEANT TO DETRACT THE BRAND OF PACMAN, NINTENDO, ATARI, OR ANY COMPANIES OTHERWISE INVOLVED IN THE INTELLECTUAL PROPERTY.", pane);
+        addWarningMessage("THE FOLLOWING GAME WAS CREATED FOR EXPERIMENTAL PROGRAMMING PURPOSES.  THE PROJECT IS NOT MEANT TO DETRACT FROM THE PACMAN BRAND, NOR MISLEAD ANY FALSE ASSOCIATIONS WITH ANTI-PACMAN AND NINTENDO, ATARI, OR ANY COMPANIES OTHERWISE INVOLVED IN THE INTELLECTUAL PROPERTY.", pane);
         addAButton("Start Game", pane);
     }
  
@@ -53,13 +59,14 @@ public class IntroScreen extends JFrame {
     private static void addWarningMessage(String text, Container container){
     	
     	final String html1 = "<html><body style='width: ";
+    	final Integer htmlWidth = 300;
     	final String html2 = "px'>";
     	
     	Runnable r = new Runnable() {
     		
     		@Override
     		public void run(){
-    			JOptionPane.showMessageDialog(null,  html1  + "300" + html2 + text);
+    			JOptionPane.showMessageDialog(null,  html1  + htmlWidth + html2 + text);
     		}
     	};
     	SwingUtilities.invokeLater(r);
